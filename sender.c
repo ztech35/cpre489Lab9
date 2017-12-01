@@ -39,8 +39,11 @@ int main(int argc, char *argv[])
   char *packet;
   double BER;//input arg
   short int crc;
-  
-
+  int sequence_num = 1000;
+  int rec;
+  int count;
+  int cwnd = 1;
+  char* ack[2], last_ack[2];
   //check for correct arguments
   if(argc == 4)
     {
@@ -83,25 +86,37 @@ int main(int argc, char *argv[])
     fprintf(stdout, "DEBUG: Sucessfully conected to the server\n");
 #endif
 
-    crc = calculate_CCITT16(input,2,GENERATE_CRC);//only need to generate the crc once
+    
 
-    while(1)//loop over the entire input string
+    while(count <= strlen(input))//loop over the entire input string
       {
 	//create packets
-	
-
-	//add congestion
+	crc = calculate_CCITT16(input,2,GENERATE_CRC);
+	packet = NULL;
+        strcat(packet, itoa(sequence_num));
+	strcat(packet, input[i]);
+	strcat(packet, input[i+1]);
+	strcat(packet, itoa(CRC));
+	//Adds congestion
 	AddCongestion(packet, BER);
 
-	//RTO timer and 
+	//RTO timer setup
 
 	//Start communication between server and client
 	
 	  //send data
 
 	  //recieve ack data
-
-	
+	rec = recv(sock, ack, 2 , 0);
+	if(rec != PACKET_LENGTH){
+	  perror("Receiving data failure");
+	  return EXIT_FAILURE;
+	}
+	if(strcmp(ack,last_ack) != 0){
+	    count += 2;
+	    last_ack = ack;
+	    cwnd++//"Congestion Avoidance(with the initial ssthresh= 16 MSS): increase cwnd by one only after the sender has received cwnd non-duplicate ACKs."	
+	      }
 	//record cwnd
       }
 
