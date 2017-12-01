@@ -6,13 +6,13 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <sys/types.h>
-
+#include
 #include "AddCongestion.h"
 #incldue "ccitt16.h"
 
 #define DEBUG 0
 #define MAX_ADDRESS 100
-#define PACKET_SIZE 2
+#define PACKET_SIZE 6
 
 int socket_connect(int sock, char server_IP[])
 {
@@ -22,7 +22,7 @@ int socket_connect(int sock, char server_IP[])
     // Setup remote connection
     remote.sin_addr.s_addr = inet_addr(server_IP); 
     remote.sin_family = PF_INET;
-    remote.sin_port = htons(3212);
+    remote.sin_port = htons(ServerPort);
 
     // Connection
     return connect(sock, (struct sockaddr *)&remote, sizeof(remote));
@@ -31,7 +31,6 @@ int socket_connect(int sock, char server_IP[])
 int main(int argc, char *argv[])
 {
   int clisock;
-  struct sockaddr_in remote_addr;
   int len = sizeof(remote_addr);
   char IP_ADDRESS[MAX_ADDRESS];//input arg
   char filename[1024];//input arg
@@ -57,14 +56,15 @@ int main(int argc, char *argv[])
 
   //read the input file
   input_file = fopen(filename, "r");
-  fgets(input, 1024, (File*)input_file);
+  fgets(input, 1024, (FILE*)input_file);
   fclose(input_file);
+  //add file not found logic
 #if DEBUG
   fprintf(stdout, "DEBUG: contents of input: %s\n", input);
 #endif
 
   // Creating the socket
-  if((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
+  if((clisock = socket(PF_INET, SOCK_STREAM, 0)) < 0)
     {
       perror("Socket creation failure");
       return EXIT_FAILURE;
