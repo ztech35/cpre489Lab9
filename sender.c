@@ -5,11 +5,12 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-
-#define DEBUG 0//sender program
 #include <sys/types.h>
-#include<sys/socket.h>
 
+#include "AddCongestion.h"
+#incldue "ccitt16.h"
+
+#define DEBUG 0
 #define MAX_ADDRESS 100
 #define PACKET_SIZE 2
 
@@ -38,6 +39,8 @@ int main(int argc, char *argv[])
   FILE *input_file;
   char *packet;
   double BER;//input arg
+  short int crc;
+  
 
   //check for correct arguments
   if(argc == 4)
@@ -79,23 +82,27 @@ int main(int argc, char *argv[])
 #if DEBUG
     fprintf(stdout, "DEBUG: Sucessfully conected to the server\n");
 #endif
+
+    crc = calculate_CCITT16(input,2,GENERATE_CRC);//only need to generate the crc once
+
     while(1)//loop over the entire input string
-    //create packets
-      
+      {
+	//create packets
+	
 
-    //add congestion
+	//add congestion
+	AddCongestion(packet, BER);
 
+	//RTO timer and 
 
-    //RTO timer and 
+	//Start communication between server and client
+	
+	  //send data
 
-    //Start communication between server and client
-  
-      //send data
+	  //recieve ack data
 
-      //recieve ack data
+	
+	//record cwnd
+      }
 
-  
-    //record cwnd
-
-
-}
+}//end of main
